@@ -1,2 +1,2 @@
-# core-seneca
+# zeno
 Core seneca implementation.

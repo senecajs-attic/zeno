@@ -13,10 +13,10 @@ if( typeof it !== 'undefined' ) {
 }
 
 
-if( typeof core_seneca === 'undefined' ) {
+if( typeof zeno === 'undefined' ) {
   var assert      = require('assert')
   var lab         = exports.lab = require('lab').script()
-  var core_seneca = require('../')  
+  var zeno = require('../')  
 
   var describe = lab.describe
   var it       = lab.it
@@ -26,10 +26,10 @@ if( typeof core_seneca === 'undefined' ) {
 describe('happy', function(){
 
   it('works', function(fin){
-    var out = core_seneca()
+    var out = zeno()
     if( 'foo' != out ) throw new Error('foo')
 
-    core_seneca = core_seneca.noConflict()
+    zeno = zeno.noConflict()
     fin()
   })
 

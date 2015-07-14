@@ -6,24 +6,24 @@
   var has_module      = typeof module  !== 'undefined'
 
 
-  function core_seneca(a) {
+  function zeno(a) {
     return 'foo'
   }
 
-  var previous = root.core_seneca
-  core_seneca.noConflict = function() {
-    root.core_seneca = previous;
-    return core_seneca;
+  var previous = root.zeno
+  zeno.noConflict = function() {
+    root.zeno = previous;
+    return zeno;
   }
 
-  root.core_seneca = core_seneca
+  root.zeno = zeno
 
   // $lab:coverage:off$
   if( typeof exports !== 'undefined' ) {
     if( typeof module !== 'undefined' && module.exports ) {
-      exports = module.exports = core_seneca
+      exports = module.exports = zeno
     }
-    exports.core_seneca = core_seneca
+    exports.zeno = zeno
   } 
   // $lab:coverage:on$
 
