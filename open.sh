@@ -1,4 +1,4 @@
-python -m SimpleHTTPServer 8080 &
-open http://localhost:8080/test/jasmine.html
+./node_modules/.bin/serve . &
+open http://localhost:3000/test/jasmine.html
 
 

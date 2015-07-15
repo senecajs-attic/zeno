@@ -417,8 +417,8 @@
       <div class="stats high">
           <div class="failures">0</div>
           <div class="skipped">0</div>
-          <div class="test-count">1</div>
-          <div class="duration">2</div>
+          <div class="test-count">2</div>
+          <div class="duration">10</div>
       </div>
       <div id="filters">
           <input type="checkbox" checked="" onchange="filter(this)" value="success" id="show-success"><label for="show-success">Show Success</label></input>
@@ -439,7 +439,14 @@
               <td class="test-title">happy works
                   
               </td>
-              <td class="test-duration">1</td>
+              <td class="test-duration">8</td>
+          </tr>
+          <tr class="show happy success">
+              <td class="test-id">2</td>
+              <td class="test-title">happy pattern
+                  
+              </td>
+              <td class="test-duration">2</td>
           </tr>
           </tbody>
       </table>
@@ -452,22 +459,22 @@
             <li><a href="#coverage">Coverage Report</a></li>
             <li>
                 <span class="cov high">100</span>
-                <a href="#core-seneca.js"><span class="basename">core-seneca.js</span></a>
+                <a href="#zeno.js"><span class="basename">zeno.js</span></a>
             </li>
         </div>
         <div class="stats high">
             <div class="percentage">100%</div>
-            <div class="sloc">23</div>
-            <div class="hits">23</div>
+            <div class="sloc">37</div>
+            <div class="hits">37</div>
             <div class="misses">0</div>
         </div>
         <div id="files">
             <div class="file">
-                <h2 id="core-seneca.js">core-seneca.js</h2>
+                <h2 id="zeno.js">zeno.js</h2>
                 <div class="stats high">
                     <div class="percentage">100%</div>
-                    <div class="sloc">23</div>
-                    <div class="hits">23</div>
+                    <div class="sloc">37</div>
+                    <div class="hits">37</div>
                     <div class="misses">0</div>
                 </div>
                 <table>
@@ -481,33 +488,33 @@
                     <tbody>
                         <tr class="hit">
                             <td class="line">1</td>
-                            <td class="hits">1</td>
-                            <td class="source">;(function() {</td>
+                            <td class="hits"></td>
+                            <td class="source">&quot;use strict&quot;;</td>
                         </tr>
                         <tr class="hit">
                             <td class="line">2</td>
-                            <td class="hits">1</td>
-                            <td class="source">  var root = this</td>
-                        </tr>
-                        <tr class="hit">
-                            <td class="line">3</td>
                             <td class="hits"></td>
                             <td class="source"></td>
                         </tr>
                         <tr class="hit">
+                            <td class="line">3</td>
+                            <td class="hits">1</td>
+                            <td class="source">var _      = require(&#x27;lodash&#x27;)</td>
+                        </tr>
+                        <tr class="hit">
                             <td class="line">4</td>
                             <td class="hits">1</td>
-                            <td class="source">  var has_require     = typeof require !== &#x27;undefined&#x27;</td>
+                            <td class="source">var patrun = require(&#x27;patrun&#x27;)</td>
                         </tr>
                         <tr class="hit">
                             <td class="line">5</td>
                             <td class="hits">1</td>
-                            <td class="source">  var has_exports     = typeof exports !== &#x27;undefined&#x27;</td>
+                            <td class="source">var jsonic = require(&#x27;jsonic&#x27;)</td>
                         </tr>
                         <tr class="hit">
                             <td class="line">6</td>
-                            <td class="hits">1</td>
-                            <td class="source">  var has_module      = typeof module  !== &#x27;undefined&#x27;</td>
+                            <td class="hits"></td>
+                            <td class="source">  </td>
                         </tr>
                         <tr class="hit">
                             <td class="line">7</td>
@@ -516,23 +523,23 @@
                         </tr>
                         <tr class="hit">
                             <td class="line">8</td>
-                            <td class="hits"></td>
-                            <td class="source"></td>
+                            <td class="hits">1</td>
+                            <td class="source">module.exports = function zeno( options ) {</td>
                         </tr>
                         <tr class="hit">
                             <td class="line">9</td>
-                            <td class="hits">1</td>
-                            <td class="source">  function core_seneca(a) {</td>
+                            <td class="hits">2</td>
+                            <td class="source">  return new Zeno( options )</td>
                         </tr>
                         <tr class="hit">
                             <td class="line">10</td>
-                            <td class="hits">1</td>
-                            <td class="source">    return &#x27;foo&#x27;</td>
+                            <td class="hits"></td>
+                            <td class="source">}</td>
                         </tr>
                         <tr class="hit">
                             <td class="line">11</td>
                             <td class="hits"></td>
-                            <td class="source">  }</td>
+                            <td class="source"></td>
                         </tr>
                         <tr class="hit">
                             <td class="line">12</td>
@@ -542,27 +549,27 @@
                         <tr class="hit">
                             <td class="line">13</td>
                             <td class="hits">1</td>
-                            <td class="source">  var previous = root.core_seneca</td>
+                            <td class="source">function Zeno() {</td>
                         </tr>
                         <tr class="hit">
                             <td class="line">14</td>
-                            <td class="hits">1</td>
-                            <td class="source">  core_seneca.noConflict = function() {</td>
+                            <td class="hits">2</td>
+                            <td class="source">  var self = this</td>
                         </tr>
                         <tr class="hit">
                             <td class="line">15</td>
-                            <td class="hits">1</td>
-                            <td class="source">    root.core_seneca = previous;</td>
+                            <td class="hits"></td>
+                            <td class="source"></td>
                         </tr>
                         <tr class="hit">
                             <td class="line">16</td>
-                            <td class="hits">1</td>
-                            <td class="source">    return core_seneca;</td>
+                            <td class="hits">2</td>
+                            <td class="source">  self.act_patrun = patrun()</td>
                         </tr>
                         <tr class="hit">
                             <td class="line">17</td>
                             <td class="hits"></td>
-                            <td class="source">  }</td>
+                            <td class="source"></td>
                         </tr>
                         <tr class="hit">
                             <td class="line">18</td>
@@ -571,53 +578,53 @@
                         </tr>
                         <tr class="hit">
                             <td class="line">19</td>
-                            <td class="hits">1</td>
-                            <td class="source">  root.core_seneca = core_seneca</td>
+                            <td class="hits">2</td>
+                            <td class="source">  self.add = function zeno_add() {</td>
                         </tr>
                         <tr class="hit">
                             <td class="line">20</td>
-                            <td class="hits"></td>
-                            <td class="source"></td>
+                            <td class="hits">4</td>
+                            <td class="source">    var i=0,args=Array(arguments.length);for(;i&lt;args.length;i++)args[i]=arguments[i]</td>
                         </tr>
                         <tr class="hit">
                             <td class="line">21</td>
                             <td class="hits"></td>
-                            <td class="source">  // $lab:coverage:off$</td>
+                            <td class="source"></td>
                         </tr>
                         <tr class="hit">
                             <td class="line">22</td>
-                            <td class="hits"></td>
-                            <td class="source">  if( typeof exports !== &#x27;undefined&#x27; ) {</td>
+                            <td class="hits">1</td>
+                            <td class="source">    var pattern = self.pattern.apply( self, args )</td>
                         </tr>
                         <tr class="hit">
                             <td class="line">23</td>
-                            <td class="hits"></td>
-                            <td class="source">    if( typeof module !== &#x27;undefined&#x27; &amp;&amp; module.exports ) {</td>
+                            <td class="hits">1</td>
+                            <td class="source">    var action  = _.last( args )</td>
                         </tr>
                         <tr class="hit">
                             <td class="line">24</td>
                             <td class="hits"></td>
-                            <td class="source">      exports = module.exports = core_seneca</td>
+                            <td class="source"></td>
                         </tr>
                         <tr class="hit">
                             <td class="line">25</td>
-                            <td class="hits"></td>
-                            <td class="source">    }</td>
+                            <td class="hits">1</td>
+                            <td class="source">    self.act_patrun.add( pattern, action )</td>
                         </tr>
                         <tr class="hit">
                             <td class="line">26</td>
                             <td class="hits"></td>
-                            <td class="source">    exports.core_seneca = core_seneca</td>
+                            <td class="source"></td>
                         </tr>
                         <tr class="hit">
                             <td class="line">27</td>
-                            <td class="hits"></td>
-                            <td class="source">  } </td>
+                            <td class="hits">1</td>
+                            <td class="source">    return self</td>
                         </tr>
                         <tr class="hit">
                             <td class="line">28</td>
                             <td class="hits"></td>
-                            <td class="source">  // $lab:coverage:on$</td>
+                            <td class="source">  }</td>
                         </tr>
                         <tr class="hit">
                             <td class="line">29</td>
@@ -627,17 +634,17 @@
                         <tr class="hit">
                             <td class="line">30</td>
                             <td class="hits"></td>
-                            <td class="source">}).call(this);</td>
+                            <td class="source"></td>
                         </tr>
                         <tr class="hit">
                             <td class="line">31</td>
-                            <td class="hits"></td>
-                            <td class="source"></td>
+                            <td class="hits">2</td>
+                            <td class="source">  self.find = function zeno_find() {</td>
                         </tr>
                         <tr class="hit">
                             <td class="line">32</td>
-                            <td class="hits"></td>
-                            <td class="source"></td>
+                            <td class="hits">3</td>
+                            <td class="source">    var i=0,args=Array(arguments.length);for(;i&lt;args.length;i++)args[i]=arguments[i]</td>
                         </tr>
                         <tr class="hit">
                             <td class="line">33</td>
@@ -646,11 +653,116 @@
                         </tr>
                         <tr class="hit">
                             <td class="line">34</td>
+                            <td class="hits">1</td>
+                            <td class="source">    var pattern = self.pattern.apply( self, args )</td>
+                        </tr>
+                        <tr class="hit">
+                            <td class="line">35</td>
                             <td class="hits"></td>
                             <td class="source"></td>
                         </tr>
                         <tr class="hit">
-                            <td class="line">35</td>
+                            <td class="line">36</td>
+                            <td class="hits">1</td>
+                            <td class="source">    return self.act_patrun.find( pattern )</td>
+                        </tr>
+                        <tr class="hit">
+                            <td class="line">37</td>
+                            <td class="hits"></td>
+                            <td class="source">  }</td>
+                        </tr>
+                        <tr class="hit">
+                            <td class="line">38</td>
+                            <td class="hits"></td>
+                            <td class="source"></td>
+                        </tr>
+                        <tr class="hit">
+                            <td class="line">39</td>
+                            <td class="hits"></td>
+                            <td class="source">  </td>
+                        </tr>
+                        <tr class="hit">
+                            <td class="line">40</td>
+                            <td class="hits">2</td>
+                            <td class="source">  self.pattern = function zeno_pattern() {</td>
+                        </tr>
+                        <tr class="hit">
+                            <td class="line">41</td>
+                            <td class="hits">43</td>
+                            <td class="source">    var i=0,args=Array(arguments.length);for(;i&lt;args.length;i++)args[i]=arguments[i]</td>
+                        </tr>
+                        <tr class="hit">
+                            <td class="line">42</td>
+                            <td class="hits"></td>
+                            <td class="source"></td>
+                        </tr>
+                        <tr class="hit">
+                            <td class="line">43</td>
+                            <td class="hits">12</td>
+                            <td class="source">    for( var i = 0; i &lt; args.length; i++ ) {</td>
+                        </tr>
+                        <tr class="hit">
+                            <td class="line">44</td>
+                            <td class="hits">19</td>
+                            <td class="source">      if( _.isString( args[i] ) ) {</td>
+                        </tr>
+                        <tr class="hit">
+                            <td class="line">45</td>
+                            <td class="hits">7</td>
+                            <td class="source">        args[i] = jsonic( args[i] )</td>
+                        </tr>
+                        <tr class="hit">
+                            <td class="line">46</td>
+                            <td class="hits"></td>
+                            <td class="source">      }</td>
+                        </tr>
+                        <tr class="hit">
+                            <td class="line">47</td>
+                            <td class="hits">12</td>
+                            <td class="source">      else if( !_.isPlainObject( args[i] ) ) {</td>
+                        </tr>
+                        <tr class="hit">
+                            <td class="line">48</td>
+                            <td class="hits">2</td>
+                            <td class="source">        args[i] = null</td>
+                        </tr>
+                        <tr class="hit">
+                            <td class="line">49</td>
+                            <td class="hits"></td>
+                            <td class="source">      }</td>
+                        </tr>
+                        <tr class="hit">
+                            <td class="line">50</td>
+                            <td class="hits"></td>
+                            <td class="source">    }</td>
+                        </tr>
+                        <tr class="hit">
+                            <td class="line">51</td>
+                            <td class="hits"></td>
+                            <td class="source"></td>
+                        </tr>
+                        <tr class="hit">
+                            <td class="line">52</td>
+                            <td class="hits">12</td>
+                            <td class="source">    return _.extend.apply( null, args )</td>
+                        </tr>
+                        <tr class="hit">
+                            <td class="line">53</td>
+                            <td class="hits"></td>
+                            <td class="source">  }</td>
+                        </tr>
+                        <tr class="hit">
+                            <td class="line">54</td>
+                            <td class="hits"></td>
+                            <td class="source"></td>
+                        </tr>
+                        <tr class="hit">
+                            <td class="line">55</td>
+                            <td class="hits"></td>
+                            <td class="source">}</td>
+                        </tr>
+                        <tr class="hit">
+                            <td class="line">56</td>
                             <td class="hits"></td>
                             <td class="source"></td>
                         </tr>
