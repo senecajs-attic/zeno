@@ -83,6 +83,50 @@ describe('happy', function(){
   })
 
 
+  it('error', function(fin){
+    var entries = []
+
+    zeno()
+      .add('a:1',function(m,r){r(new Error('x'))})
+      .act('a:1',function(err){
+        expect(err.message).to.equal('x')
+        fin()
+      })
+  })
+
+
+  it('log', function(fin){
+    var entries = []
+
+    zeno({
+      log:function(entry){
+        entries.push( entry )
+      }})
+
+      .log({x:1})
+      .log(function(){ return {y:1} })
+      .log('z')
+
+      .add('a:1',function(m,r){r(0,{x:m.x})})
+      .act('a:1,x:9', function(err,out){
+        if( err ) return fin(err)
+        expect( out.x ).to.equal( 9 )
+
+        var i = 0
+        expect( entries[i++] ).to.deep.include( {x:1} )
+        expect( entries[i++] ).to.deep.include( {y:1} )
+        expect( entries[i++] ).to.deep.include( {value:'z'} )
+        expect( entries[i++] ).to.deep.include( {type:'add', pattern:{a:1}} )
+        expect( entries[i++] ).to.deep.include( {
+          type:'act', case:'in', pattern:{a:1}, data:{a:1,x:9}})
+        expect( entries[i++] ).to.deep.include( {
+          type:'act', case:'out', pattern:{a:1}, data:{x:9}})
+
+        fin()
+      })
+    
+  })
+
 })
 
 

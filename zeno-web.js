@@ -21900,7 +21900,9 @@ function Zeno( options ) {
 
 
   options = _.extend( {
-    action_executor: direct_executor
+    action_executor:  default_executor,
+    response_handler: default_response_handler,
+    log:              null
   }, options )
 
 
@@ -21919,6 +21921,8 @@ function Zeno( options ) {
     }
 
     self.act_patrun.add( pattern, actdef )
+    
+    self.log( { type:'add', pattern:pattern } )
 
     return self
   }
@@ -21935,7 +21939,10 @@ function Zeno( options ) {
     var actdef = self.find( msg )
 
     if( actdef ) {
-      options.action_executor( self, actdef, msg, respond )
+      var responder = options.response_handler( self, actdef, msg, respond )
+
+      self.log( { type:'act', case:'in', pattern:actdef.pattern, data:msg } )
+      options.action_executor( self, actdef, msg, responder )
     }
 
     return self
@@ -21967,9 +21974,37 @@ function Zeno( options ) {
   }
 
 
+  self.log = function zeno_log( entry ) {
+    if( options.log ) {
+      entry 
+        = _.isPlainObject(entry) ? entry
+        : _.isFunction( entry ) ? entry()
+        : { value:entry }
 
-  function direct_executor( instance, actdef, msg, respond ) {
-    actdef.action.call( instance, msg, respond )
+      entry.time = Date.now()
+      options.log( entry )
+    }
+    return self
+  }
+
+
+  function default_executor( instance, actdef, msg, responder ) {
+    actdef.action.call( instance, msg, responder )
+  }
+
+
+  function default_response_handler( instance, actdef, msg, respond ) {
+    return function() {
+      var i=0,args=Array(arguments.length);
+      for(;i<args.length;i++)args[i]=arguments[i]
+
+      // normalize err argument to null if there's no error
+      args[0] = !!args[0] ? args[0] : null
+      
+      self.log( { type:'act', case:'out', 
+                  pattern:actdef.pattern, data:args[1] } )
+      respond.apply( instance, args )
+    }
   }
 }
 
