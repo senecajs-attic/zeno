@@ -96,7 +96,7 @@ describe('happy', function(){
 
 
   it('log', function(fin){
-    var entries = []
+    var entries = [], i = 0
 
     zeno({
       log:function(entry){
@@ -112,15 +112,18 @@ describe('happy', function(){
         if( err ) return fin(err)
         expect( out.x ).to.equal( 9 )
 
-        var i = 0
-        expect( entries[i++] ).to.deep.include( {x:1} )
-        expect( entries[i++] ).to.deep.include( {y:1} )
-        expect( entries[i++] ).to.deep.include( {value:'z'} )
-        expect( entries[i++] ).to.deep.include( {type:'add', pattern:{a:1}} )
-        expect( entries[i++] ).to.deep.include( {
-          type:'act', case:'in', pattern:{a:1}, data:{a:1,x:9}})
-        expect( entries[i++] ).to.deep.include( {
-          type:'act', case:'out', pattern:{a:1}, data:{x:9}})
+        expect( entries[i++] ).to.deep.include( 
+          {x:1} )
+        expect( entries[i++] ).to.deep.include( 
+          {y:1} )
+        expect( entries[i++] ).to.deep.include( 
+          {value:'z'} )
+        expect( entries[i++] ).to.deep.include( 
+          {type:'add', pattern:{a:1}} )
+        expect( entries[i++] ).to.deep.include( 
+          { type:'act', case:'in', pattern:{a:1}, data:{a:1,x:9}})
+        expect( entries[i++] ).to.deep.include(
+          { type:'act', case:'out', pattern:{a:1}, data:{x:9}})
 
         fin()
       })

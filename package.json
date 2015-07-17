@@ -4,7 +4,7 @@
   "description": "Core Seneca implementation.",
   "main": "zeno.js",
   "scripts": {
-    "test": "./node_modules/.bin/lab -v -c -P spec",
+    "test": "./node_modules/.bin/lab -v -L -c -P spec -L --lint-options ''",
     "cover": "./node_modules/.bin/lab -v -c -P spec -r html -o test/report.html",
     "perf": "node --allow-natives-syntax --expose-gc test/zeno-perf.js"
   },

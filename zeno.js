@@ -1,15 +1,15 @@
+/* Copyright (c) 2015 Richard Rodger, MIT License */
 "use strict";
+
 
 var _      = require('lodash')
 var patrun = require('patrun')
 var jsonic = require('jsonic')
-  
+
 
 module.exports = function zeno( options ) {
   return new Zeno( options )
 }
-
-
 
 
 /**
@@ -31,7 +31,8 @@ function Zeno( options ) {
 
 
   self.add = function zeno_add() {
-    var i=0,args=Array(arguments.length);for(;i<args.length;i++)args[i]=arguments[i]
+    ;var i=0,args=Array(arguments.length);// eslint-disable-line
+    ;for(;i<args.length;i++)args[i]=arguments[i]// eslint-disable-line
 
     var pattern = self.pattern.apply( self, args )
     var action  = _.last( args )
@@ -42,7 +43,7 @@ function Zeno( options ) {
     }
 
     self.act_patrun.add( pattern, actdef )
-    
+
     self.log( { type:'add', pattern:pattern } )
 
     return self
@@ -50,7 +51,8 @@ function Zeno( options ) {
 
 
   self.act = function zeno_act() {
-    var i=0,args=Array(arguments.length);for(;i<args.length;i++)args[i]=arguments[i]
+    ;var i=0,args=Array(arguments.length);// eslint-disable-line
+    ;for(;i<args.length;i++)args[i]=arguments[i]// eslint-disable-line
 
     var msg     = self.pattern.apply( self, args )
     var respond = _.last( args )
@@ -71,18 +73,20 @@ function Zeno( options ) {
 
 
   self.find = function zeno_find() {
-    var i=0,args=Array(arguments.length);for(;i<args.length;i++)args[i]=arguments[i]
+    ;var i=0,args=Array(arguments.length);// eslint-disable-line
+    ;for(;i<args.length;i++)args[i]=arguments[i]// eslint-disable-line
 
     var pattern = self.pattern.apply( self, args )
 
     return self.act_patrun.find( pattern )
   }
 
-  
-  self.pattern = function zeno_pattern() {
-    var i=0,args=Array(arguments.length);for(;i<args.length;i++)args[i]=arguments[i]
 
-    for( var i = 0; i < args.length; i++ ) {
+  self.pattern = function zeno_pattern() {
+    ;var i=0,args=Array(arguments.length);// eslint-disable-line
+    ;for(;i<args.length;i++)args[i]=arguments[i]// eslint-disable-line
+
+    for( i = 0; i < args.length; i++ ) {
       if( _.isString( args[i] ) ) {
         args[i] = jsonic( args[i] )
       }
@@ -97,7 +101,7 @@ function Zeno( options ) {
 
   self.log = function zeno_log( entry ) {
     if( options.log ) {
-      entry 
+      entry
         = _.isPlainObject(entry) ? entry
         : _.isFunction( entry ) ? entry()
         : { value:entry }
@@ -116,13 +120,13 @@ function Zeno( options ) {
 
   function default_response_handler( instance, actdef, msg, respond ) {
     return function() {
-      var i=0,args=Array(arguments.length);
-      for(;i<args.length;i++)args[i]=arguments[i]
+      ;var i=0,args=Array(arguments.length);// eslint-disable-line
+      ;for(;i<args.length;i++)args[i]=arguments[i]// eslint-disable-line
 
       // normalize err argument to null if there's no error
       args[0] = !!args[0] ? args[0] : null
-      
-      self.log( { type:'act', case:'out', 
+
+      self.log( { type:'act', case:'out',
                   pattern:actdef.pattern, data:args[1] } )
       respond.apply( instance, args )
     }
