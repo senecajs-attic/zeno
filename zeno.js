@@ -59,7 +59,7 @@ function Zeno( options ) {
 
     respond = _.isFunction( respond ) ? respond : _.noop
 
-    var actdef = self.find( msg )
+    var actdef = self.act_patrun.find( msg )
 
     if( actdef ) {
       var responder = options.response_handler( self, actdef, msg, respond )
@@ -79,6 +79,18 @@ function Zeno( options ) {
     var pattern = self.pattern.apply( self, args )
 
     return self.act_patrun.find( pattern )
+  }
+
+
+  self.list = function zeno_list() {
+    ;var i=0,args=Array(arguments.length);// eslint-disable-line
+    ;for(;i<args.length;i++)args[i]=arguments[i]// eslint-disable-line
+
+    var pattern = self.pattern.apply( self, args )
+
+    return _.map( self.act_patrun.list( pattern ), function( entry ) {
+      return entry.data
+    })
   }
 
 

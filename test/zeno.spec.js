@@ -83,6 +83,83 @@ describe('happy', function(){
   })
 
 
+  it('find', function(fin){
+    var z0 = zeno()
+    expect( z0.find('x:0') ).to.equal( null ) 
+
+    z0.add('a:0',function a0(){})
+    
+    var find0 = z0.find('a:0')
+    expect( find0.pattern ).to.deep.equal( { a: 0 } )
+    expect( find0.action.name ).to.deep.equal( 'a0' )
+
+    find0 = z0.find( {a:0} )
+    expect( find0.pattern ).to.deep.equal( { a: 0 } )
+    expect( find0.action.name ).to.deep.equal( 'a0' )
+
+    z0.add('a:1',function a1(){})
+
+    var find1 = z0.find('a:1')
+    expect( find1.pattern ).to.deep.equal( { a: 1 } )
+    expect( find1.action.name ).to.deep.equal( 'a1' )
+
+    z0.add('a:1,b:2',function a1b2(){})
+
+    var find2 = z0.find('a:1,b:2')
+    expect( find2.pattern ).to.deep.equal( { a: 1, b: 2 } )
+
+    expect( z0.find('a:1','b:2').pattern ).to.deep.equal( { a: 1, b: 2 } )
+    expect( z0.find('a:1',{b:2}).pattern ).to.deep.equal( { a: 1, b: 2 } )
+    expect( z0.find({a:1},{b:2}).pattern ).to.deep.equal( { a: 1, b: 2 } )
+
+    // still a match!
+    expect( z0.find('a:1,b:2,c:3').pattern ).to.deep.equal( { a: 1, b: 2 } )
+
+    expect( z0.find('b:2') ).to.equal( null ) 
+
+    fin()
+  })
+
+
+  it('list', function(fin){
+    var z0 = zeno()
+    expect( z0.list().length ).to.equal( 0 )
+
+    z0.add('b:0',function b0(){})
+    
+    var list0 = z0.list()
+    expect( list0.length ).to.equal( 1 )
+    expect( list0[0].pattern ).to.deep.equal( { b: 0 } )
+    expect( list0[0].action.name ).to.deep.equal( 'b0' )
+
+    z0.add('b:1',function b1(){})
+    var list1 = z0.list()
+    expect( list1.length ).to.equal( 2 )
+    expect( list1[0].pattern ).to.deep.equal( { b: 0 } )
+    expect( list1[0].action.name ).to.deep.equal( 'b0' )
+    expect( list1[1].pattern ).to.deep.equal( { b: 1 } )
+    expect( list1[1].action.name ).to.deep.equal( 'b1' )
+
+    // alphanumeric order
+    z0.add('a:0',function a0(){})
+    var list2 = z0.list()
+    expect( list2.length ).to.equal( 3 )
+    expect( list2[0].pattern ).to.deep.equal( { a: 0 } )
+    expect( list2[0].action.name ).to.deep.equal( 'a0' )
+    expect( list2[1].pattern ).to.deep.equal( { b: 0 } )
+    expect( list2[1].action.name ).to.deep.equal( 'b0' )
+    expect( list2[2].pattern ).to.deep.equal( { b: 1 } )
+    expect( list2[2].action.name ).to.deep.equal( 'b1' )
+
+    var list3 = z0.list({a:0})
+    expect( list3.length ).to.equal( 1 )
+    expect( list3[0].pattern ).to.deep.equal( { a: 0 } )
+    expect( list3[0].action.name ).to.deep.equal( 'a0' )
+
+    fin()
+  })
+
+
   it('error', function(fin){
     var entries = []
 

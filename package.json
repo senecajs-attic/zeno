@@ -27,13 +27,13 @@
   "dependencies": {
     "jsonic": "0.2.1",
     "lodash": "3.10.0",
-    "patrun": "0.4.3"
+    "patrun": "0.4.4"
   },
   "devDependencies": {
-    "browserify": "^10.2.6",
+    "browserify": "10.2.6",
     "code": "1.4.1",
     "jasmine-node": "1.14.5",
     "lab": "5.13.0",
-    "serve": "^1.4.0"
+    "serve": "1.4.0"
   }
 }
