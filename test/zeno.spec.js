@@ -165,27 +165,27 @@ describe('happy', function(){
     var z0 = zeno()
 
     z0.add('c:0',function c0(){})
-    expect(jsonic.stringify(z0.tree(),{depth:9}))
-      .to.equal('{"c:0":{_:{pattern:{c:0}}}}')
+    expect( z0.tree() )
+      .to.deep.include({"c:0":{_:{pattern:{c:0}}}})
 
     z0.add('b:1,c:0',function b1c0(){})
-    expect(jsonic.stringify(z0.tree(),{depth:9}))
-      .to.equal('{"b:1":{"c:0":{_:{pattern:{b:1,c:0}}}},"c:0":{_:{pattern:{c:0}}}}')
+    expect( z0.tree() )
+      .to.deep.include({"b:1":{"c:0":{_:{pattern:{b:1,c:0}}}},"c:0":{_:{pattern:{c:0}}}})
 
     z0.add('a:2,b:1,c:0',function a2b1c0(){})
-    expect(jsonic.stringify(z0.tree(),{depth:9,maxchars:999}))
-      .to.equal('{"a:2":{"b:1":{"c:0":{_:{pattern:{a:2,b:1,c:0}}}}},"b:1":{"c:0":{_:{pattern:{b:1,c:0}}}},"c:0":{_:{pattern:{c:0}}}}')
+    expect( z0.tree() )
+      .to.deep.include({"a:2":{"b:1":{"c:0":{_:{pattern:{a:2,b:1,c:0}}}}},"b:1":{"c:0":{_:{pattern:{b:1,c:0}}}},"c:0":{_:{pattern:{c:0}}}})
 
     z0.add('a:2,b:1',function a2b1(){})
-    expect(jsonic.stringify(z0.tree(),{depth:9,maxchars:999}))
-      .to.equal('{"a:2":{"b:1":{_:{pattern:{a:2,b:1}},"c:0":{_:{pattern:{a:2,b:1,c:0}}}}},"b:1":{"c:0":{_:{pattern:{b:1,c:0}}}},"c:0":{_:{pattern:{c:0}}}}')
+    expect( z0.tree() )
+      .to.deep.include({"a:2":{"b:1":{_:{pattern:{a:2,b:1}},"c:0":{_:{pattern:{a:2,b:1,c:0}}}}},"b:1":{"c:0":{_:{pattern:{b:1,c:0}}}},"c:0":{_:{pattern:{c:0}}}})
 
     z0.add('a:2',function a2(){})
-    expect(jsonic.stringify(z0.tree(),{depth:9,maxchars:999}))
-      .to.equal('{"a:2":{_:{pattern:{a:2}},"b:1":{_:{pattern:{a:2,b:1}},"c:0":{_:{pattern:{a:2,b:1,c:0}}}}},"b:1":{"c:0":{_:{pattern:{b:1,c:0}}}},"c:0":{_:{pattern:{c:0}}}}')
+    expect( z0.tree() )
+      .to.deep.include({"a:2":{_:{pattern:{a:2}},"b:1":{_:{pattern:{a:2,b:1}},"c:0":{_:{pattern:{a:2,b:1,c:0}}}}},"b:1":{"c:0":{_:{pattern:{b:1,c:0}}}},"c:0":{_:{pattern:{c:0}}}})
 
-    expect(jsonic.stringify(z0.tree('a:2'),{depth:9,maxchars:999}))
-      .to.equal('{"a:2":{_:{pattern:{a:2}},"b:1":{_:{pattern:{a:2,b:1}},"c:0":{_:{pattern:{a:2,b:1,c:0}}}}}}')
+    expect( z0.tree('a:2') )
+      .to.deep.include({"a:2":{_:{pattern:{a:2}},"b:1":{_:{pattern:{a:2,b:1}},"c:0":{_:{pattern:{a:2,b:1,c:0}}}}}})
 
     fin()
   })
@@ -237,6 +237,47 @@ describe('happy', function(){
       })
     
   })
+
+
+  it('prior', function(fin){
+    var entries = [], d = 0
+
+    zeno({
+      log:function(entry){
+        entries.push( entry )
+      }})
+
+      .add('a:1',function A(m,r){
+        r(0,{x:m.x})
+      })
+      .add('a:1',function B(m,r){
+        m.x=2
+        this.prior(m,function(e,o){
+          if(e) return r(e)
+          o.y=m.y
+          r(0,o)
+        })
+      })
+
+      .add('b:2',function A(m,r){
+        this.prior(m,function(e,o){
+          r(0,{z:m.z})
+        })
+      })
+
+      .act('a:1,y:3',function(e,o){
+        expect(o).to.deep.equal({x:2,y:3})
+
+        d++ && 2 === d && fin()
+      })
+
+      .act('b:2,z:4',function(e,o){
+        expect(o).to.deep.equal({z:4})
+
+        d++ && 2 === d && fin()
+      })
+  })
+  
 
 })
 

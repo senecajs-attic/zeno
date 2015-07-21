@@ -39,12 +39,13 @@ function Zeno( options ) {
 
     var actdef = {
       pattern: pattern,
-      action:  action
+      action:  action,
+      prior:   self.act_patrun.find( pattern, true )
     }
 
     self.act_patrun.add( pattern, actdef )
 
-    self.log( { type:'add', pattern:pattern } )
+    self.log( { type:'add', pattern:pattern, action:action.name } )
 
     return self
   }
@@ -62,10 +63,7 @@ function Zeno( options ) {
     var actdef = self.act_patrun.find( msg )
 
     if( actdef ) {
-      var responder = options.response_handler( self, actdef, msg, respond )
-
-      self.log( { type:'act', case:'in', pattern:actdef.pattern, data:msg } )
-      options.action_executor( self, actdef, msg, responder )
+      call_act( self, actdef, msg, respond )
     }
 
     return self
@@ -147,6 +145,43 @@ function Zeno( options ) {
   }
 
 
+  function call_act( instance, actdef, msg, respond ) {
+    var responder = options.response_handler( instance, actdef, msg, respond )
+
+    self.log({
+      type:    'act',
+      case:    'in',
+      pattern: actdef.pattern,
+      action:  actdef.action.name,
+      data:    msg
+    })
+
+    var delegate = Object.create( instance )
+    delegate.prior = function( prior_msg, prior_respond ) {
+      if( actdef.prior ) {
+        call_act( delegate, actdef.prior, prior_msg, prior_respond )
+      }
+      else prior_respond()
+    }
+
+    options.action_executor( delegate, actdef, msg, function call_res() {
+      // normalize err argument to null if there's no error
+      var err = (!!arguments[0] ? arguments[0] : null)
+
+      self.log({
+        type:    'act',
+        case:    (err ? 'err' : 'out'),
+        pattern: actdef.pattern,
+        action:  actdef.action.name,
+        data:    arguments[1],
+        error:   err
+      })
+
+      responder.apply( self, arguments )
+    })
+  }
+
+
   function default_executor( instance, actdef, msg, responder ) {
     actdef.action.call( instance, msg, responder )
   }
@@ -154,15 +189,10 @@ function Zeno( options ) {
 
   function default_response_handler( instance, actdef, msg, respond ) {
     return function() {
-      ;var i=0,args=Array(arguments.length);// eslint-disable-line
-      ;for(;i<args.length;i++)args[i]=arguments[i]// eslint-disable-line
+      //;var i=0,args=Array(arguments.length);// eslint-disable-line
+      //;for(;i<args.length;i++)args[i]=arguments[i]// eslint-disable-line
 
-      // normalize err argument to null if there's no error
-      args[0] = !!args[0] ? args[0] : null
-
-      self.log( { type:'act', case:'out',
-                  pattern:actdef.pattern, data:args[1] } )
-      respond.apply( instance, args )
+      respond.apply( instance, arguments )
     }
   }
 }
