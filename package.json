@@ -25,7 +25,7 @@
   },
   "homepage": "https://github.com/senecajs/zeno",
   "dependencies": {
-    "jsonic": "0.2.1",
+    "jsonic": "0.2.2",
     "lodash": "3.10.0",
     "patrun": "0.4.4"
   },

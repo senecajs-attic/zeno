@@ -94,6 +94,28 @@ function Zeno( options ) {
   }
 
 
+  self.tree = function zeno_tree() {
+    ;var i=0,args=Array(arguments.length);// eslint-disable-line
+    ;for(;i<args.length;i++)args[i]=arguments[i]// eslint-disable-line
+
+    var pattern = self.pattern.apply( self, args )
+    var tree    = {}
+
+    _.each( self.act_patrun.list( pattern ), function(entry) {
+      var cur = tree, n
+
+      _.each( entry.match, function( v, k ) {
+        n = k + ':' + v
+        cur = cur[n] ? cur[n] : (cur[n] = {})
+      })
+
+      cur._ = self.act_patrun.find(entry.match)
+    })
+
+    return tree
+  }
+
+
   self.pattern = function zeno_pattern() {
     ;var i=0,args=Array(arguments.length);// eslint-disable-line
     ;for(;i<args.length;i++)args[i]=arguments[i]// eslint-disable-line

@@ -21,6 +21,7 @@ if( typeof it !== 'undefined' ) {
 
 
 if( typeof zeno === 'undefined' ) {
+  var jsonic = require('jsonic')
   var expect = require('code').expect
   var lab    = exports.lab = require('lab').script()
   var zeno   = require('../')  
@@ -155,6 +156,36 @@ describe('happy', function(){
     expect( list3.length ).to.equal( 1 )
     expect( list3[0].pattern ).to.deep.equal( { a: 0 } )
     expect( list3[0].action.name ).to.deep.equal( 'a0' )
+
+    fin()
+  })
+
+
+  it('tree', function(fin){
+    var z0 = zeno()
+
+    z0.add('c:0',function c0(){})
+    expect(jsonic.stringify(z0.tree(),{depth:9}))
+      .to.equal('{"c:0":{_:{pattern:{c:0}}}}')
+
+    z0.add('b:1,c:0',function b1c0(){})
+    expect(jsonic.stringify(z0.tree(),{depth:9}))
+      .to.equal('{"b:1":{"c:0":{_:{pattern:{b:1,c:0}}}},"c:0":{_:{pattern:{c:0}}}}')
+
+    z0.add('a:2,b:1,c:0',function a2b1c0(){})
+    expect(jsonic.stringify(z0.tree(),{depth:9,maxchars:999}))
+      .to.equal('{"a:2":{"b:1":{"c:0":{_:{pattern:{a:2,b:1,c:0}}}}},"b:1":{"c:0":{_:{pattern:{b:1,c:0}}}},"c:0":{_:{pattern:{c:0}}}}')
+
+    z0.add('a:2,b:1',function a2b1(){})
+    expect(jsonic.stringify(z0.tree(),{depth:9,maxchars:999}))
+      .to.equal('{"a:2":{"b:1":{_:{pattern:{a:2,b:1}},"c:0":{_:{pattern:{a:2,b:1,c:0}}}}},"b:1":{"c:0":{_:{pattern:{b:1,c:0}}}},"c:0":{_:{pattern:{c:0}}}}')
+
+    z0.add('a:2',function a2(){})
+    expect(jsonic.stringify(z0.tree(),{depth:9,maxchars:999}))
+      .to.equal('{"a:2":{_:{pattern:{a:2}},"b:1":{_:{pattern:{a:2,b:1}},"c:0":{_:{pattern:{a:2,b:1,c:0}}}}},"b:1":{"c:0":{_:{pattern:{b:1,c:0}}}},"c:0":{_:{pattern:{c:0}}}}')
+
+    expect(jsonic.stringify(z0.tree('a:2'),{depth:9,maxchars:999}))
+      .to.equal('{"a:2":{_:{pattern:{a:2}},"b:1":{_:{pattern:{a:2,b:1}},"c:0":{_:{pattern:{a:2,b:1,c:0}}}}}}')
 
     fin()
   })
