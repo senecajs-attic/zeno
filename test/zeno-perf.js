@@ -73,6 +73,26 @@ duration = process.hrtime(start)
 print(z0.log, i, duration)
 
 
+// zeno.list
+start = process.hrtime()
+for( var i = 0; i < 1e5; i++ ) {
+  z0.list( {a:1,b:2} )
+}
+duration = process.hrtime(start)
+
+print(z0.list, i, duration)
+
+
+// zeno.tree
+start = process.hrtime()
+for( var i = 0; i < 1e5; i++ ) {
+  z0.tree( {a:1,b:2} )
+}
+duration = process.hrtime(start)
+
+print(z0.tree, i, duration)
+
+
 
 
 
