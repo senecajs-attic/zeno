@@ -189,9 +189,6 @@ function Zeno( options ) {
 
   function default_response_handler( instance, actdef, msg, respond ) {
     return function() {
-      //;var i=0,args=Array(arguments.length);// eslint-disable-line
-      //;for(;i<args.length;i++)args[i]=arguments[i]// eslint-disable-line
-
       respond.apply( instance, arguments )
     }
   }
