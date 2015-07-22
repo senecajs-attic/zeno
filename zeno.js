@@ -21,8 +21,9 @@ function Zeno( options ) {
 
 
   options = _.extend( {
-    action_executor:  default_executor,
-    response_handler: default_response_handler,
+    action_executor:   default_executor,
+    action_subscriber: default_subscriber,
+    response_handler:  default_response_handler,
     log:              _.noop
   }, options )
 
@@ -31,39 +32,46 @@ function Zeno( options ) {
 
 
   self.add = function zeno_add() {
-    ;var i=0,args=Array(arguments.length);// eslint-disable-line
-    ;for(;i<args.length;i++)args[i]=arguments[i]// eslint-disable-line
+    var spec    = self.pattern.apply( self, arguments )
+    var pattern = clean( spec )
+    var action  = arguments[arguments.length - 1]
+    var issub   = spec.sub$
 
-    var pattern = self.pattern.apply( self, args )
-    var action  = _.last( args )
+    var prior = self.act_patrun.find( pattern, true )
 
-    var actdef = {
-      pattern: pattern,
-      action:  action,
-      prior:   self.act_patrun.find( pattern, true )
+    if( prior && issub ) {
+      prior.sub.push( action )
+    }
+    else {
+      self.act_patrun.add( pattern, {
+        pattern: pattern,
+        action:  issub ? _.noop : action,
+        prior:   prior,
+        sub:     issub ? [action] : []
+      })
     }
 
-    self.act_patrun.add( pattern, actdef )
-
-    options.log( { type:'add', pattern:pattern, action:action.name } )
+    options.log({
+      type:    issub ? 'sub' : 'add',
+      pattern: pattern,
+      action:  action.name
+    })
 
     return self
   }
 
 
   self.act = function zeno_act() {
-    ;var i=0,args=Array(arguments.length);// eslint-disable-line
-    ;for(;i<args.length;i++)args[i]=arguments[i]// eslint-disable-line
-
-    var msg     = self.pattern.apply( self, args )
-    var respond = _.last( args )
+    var msg     = self.pattern.apply( self, arguments )
+    var respond = arguments[arguments.length - 1]
 
     respond = _.isFunction( respond ) ? respond : _.noop
 
-    var actdef = self.act_patrun.find( msg )
+    var actdef = self.act_patrun.find( clean(msg) )
 
     if( actdef ) {
       call_act( self, actdef, msg, respond )
+      call_sub( self, actdef, msg )
     }
 
     return self
@@ -71,35 +79,26 @@ function Zeno( options ) {
 
 
   self.find = function zeno_find() {
-    ;var i=0,args=Array(arguments.length);// eslint-disable-line
-    ;for(;i<args.length;i++)args[i]=arguments[i]// eslint-disable-line
+    var pattern = self.pattern.apply( self, arguments )
 
-    var pattern = self.pattern.apply( self, args )
-
-    return self.act_patrun.find( pattern )
+    return self.act_patrun.find( clean(pattern) )
   }
 
 
   self.list = function zeno_list() {
-    ;var i=0,args=Array(arguments.length);// eslint-disable-line
-    ;for(;i<args.length;i++)args[i]=arguments[i]// eslint-disable-line
+    var pattern = self.pattern.apply( self, arguments )
 
-    var pattern = self.pattern.apply( self, args )
-
-    return _.map( self.act_patrun.list( pattern ), function( entry ) {
+    return _.map( self.act_patrun.list( clean(pattern) ), function( entry ) {
       return entry.data
     })
   }
 
 
   self.tree = function zeno_tree() {
-    ;var i=0,args=Array(arguments.length);// eslint-disable-line
-    ;for(;i<args.length;i++)args[i]=arguments[i]// eslint-disable-line
-
-    var pattern = self.pattern.apply( self, args )
+    var pattern = self.pattern.apply( self, arguments )
     var tree    = {}
 
-    _.each( self.act_patrun.list( pattern ), function(entry) {
+    _.each( self.act_patrun.list( clean(pattern) ), function(entry) {
       var cur = tree, n
 
       _.each( entry.match, function( v, k ) {
@@ -132,6 +131,8 @@ function Zeno( options ) {
 
 
   function call_act( instance, actdef, msg, respond ) {
+    if( _.noop === actdef.action ) return;
+
     var responder = options.response_handler( instance, actdef, msg, respond )
 
     options.log({
@@ -170,6 +171,21 @@ function Zeno( options ) {
   }
 
 
+  function call_sub( instance, actdef, msg ) {
+    for(var i = 0; i < actdef.sub.length; i++ ) {
+      options.log({
+        time:    Date.now(),
+        type:    'pub',
+        pattern: actdef.pattern,
+        sub:     actdef.sub[i].name,
+        data:    msg
+      })
+
+      options.action_subscriber( instance, actdef, actdef.sub[i], msg )
+    }
+  }
+
+
   function default_executor( instance, actdef, msg, responder ) {
     actdef.action.call( instance, msg, responder )
   }
@@ -179,5 +195,17 @@ function Zeno( options ) {
     return function() {
       respond.apply( instance, arguments )
     }
+  }
+
+
+  function default_subscriber( instance, actdef, sub, msg ) {
+    sub.call( instance, msg )
+  }
+
+
+  function clean( msg ) {
+    return _.omit( msg, function( v, n ) {
+      return ~n.indexOf('$')
+    })
   }
 }

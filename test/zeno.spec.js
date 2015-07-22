@@ -269,6 +269,84 @@ describe('happy', function(){
   })
   
 
+  it('sub', function(fin){
+    var entries = [], hist = {}
+
+    var z0 = zeno({
+      log:function(entry){
+        entries.push( entry )
+      }})
+
+      .add('a:0,sub$:true',function A(m){
+        hist.x = m.x
+      })
+
+      .act('a:0,x:1')
+
+    setImmediate(function(){
+      expect( hist.x ).to.equal(1)
+      expect( z0.find('a:0').sub.length ).to.equal(1)
+      expect( entries.length ).to.equal(2)
+
+      z0
+        .add('a:0,sub$:true',function B(m){
+          hist.y = m.y
+        })
+
+        .act('a:0,x:2,y:2')
+
+      setImmediate(function(){
+        expect( hist.x ).to.equal(2)
+        expect( hist.y ).to.equal(2)
+        expect( z0.find('a:0').sub.length ).to.equal(2)
+        expect( entries.length ).to.equal(5)
+
+        fin()
+      })
+    })
+  })
+
+
+  it('addsub', function(fin){
+    var entries = [], hist = {}
+
+    var z0 = zeno({
+      log:function(entry){
+        entries.push( entry )
+      }})
+
+    z0
+      .add('a:0',function A(m,r){
+        hist.x = m.x
+        r(0,{x:m.x})
+      })
+
+      .add('a:0,sub$:true',function B(m){
+        hist.y = m.y
+      })
+
+      .act('a:0,x:1,y:1',function(e,o){
+        if(e) return fin(e)
+
+        expect( o.x ).to.equal(1)
+
+        expect( hist.x ).to.equal(1)
+        expect( hist.y ).to.equal(void 0)
+        expect( z0.find('a:0').sub.length ).to.equal(1)
+        expect( entries.length ).to.equal(4)
+
+        setImmediate(function(){ 
+          expect( hist.x ).to.equal(1)
+          expect( hist.y ).to.equal(1)
+          expect( entries.length ).to.equal(5)
+
+          fin()
+        })
+      })
+
+  })
+
+
 })
 
 
