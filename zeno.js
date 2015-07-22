@@ -23,7 +23,7 @@ function Zeno( options ) {
   options = _.extend( {
     action_executor:  default_executor,
     response_handler: default_response_handler,
-    log:              null
+    log:              _.noop
   }, options )
 
 
@@ -45,7 +45,7 @@ function Zeno( options ) {
 
     self.act_patrun.add( pattern, actdef )
 
-    self.log( { type:'add', pattern:pattern, action:action.name } )
+    options.log( { type:'add', pattern:pattern, action:action.name } )
 
     return self
   }
@@ -131,24 +131,11 @@ function Zeno( options ) {
   }
 
 
-  self.log = function zeno_log( entry ) {
-    if( options.log ) {
-      entry
-        = _.isPlainObject(entry) ? entry
-        : _.isFunction( entry ) ? entry()
-        : { value:entry }
-
-      entry.time = Date.now()
-      options.log( entry )
-    }
-    return self
-  }
-
-
   function call_act( instance, actdef, msg, respond ) {
     var responder = options.response_handler( instance, actdef, msg, respond )
 
-    self.log({
+    options.log({
+      time:    Date.now(),
       type:    'act',
       case:    'in',
       pattern: actdef.pattern,
@@ -168,7 +155,8 @@ function Zeno( options ) {
       // normalize err argument to null if there's no error
       var err = (!!arguments[0] ? arguments[0] : null)
 
-      self.log({
+      options.log({
+        time:    Date.now(),
         type:    'act',
         case:    (err ? 'err' : 'out'),
         pattern: actdef.pattern,

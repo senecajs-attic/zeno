@@ -211,21 +211,11 @@ describe('happy', function(){
         entries.push( entry )
       }})
 
-      .log({x:1})
-      .log(function(){ return {y:1} })
-      .log('z')
-
       .add('a:1',function(m,r){r(0,{x:m.x})})
       .act('a:1,x:9', function(err,out){
         if( err ) return fin(err)
         expect( out.x ).to.equal( 9 )
 
-        expect( entries[i++] ).to.deep.include( 
-          {x:1} )
-        expect( entries[i++] ).to.deep.include( 
-          {y:1} )
-        expect( entries[i++] ).to.deep.include( 
-          {value:'z'} )
         expect( entries[i++] ).to.deep.include( 
           {type:'add', pattern:{a:1}} )
         expect( entries[i++] ).to.deep.include( 
