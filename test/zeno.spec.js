@@ -32,6 +32,9 @@ if( typeof zeno === 'undefined' ) {
 else {
   expect = code.expect
   __dirname = '@@@-never-match-@@@'
+  setImmediate = function(f){
+    setTimeout(f,1)
+  }
 }
 
 
@@ -157,6 +160,18 @@ describe('happy', function(){
     expect( list3[0].pattern ).to.deep.equal( { a: 0 } )
     expect( list3[0].action.name ).to.deep.equal( 'a0' )
 
+    fin()
+  })
+
+
+  it('list', function(fin){
+    var z0 = zeno()
+
+    z0.add('a:0,b:1',function ab(){})
+
+    console.log(z0.find('a:0,b:*'))
+    console.log(z0.list('a:0,b:*'))
+    
     fin()
   })
 
