@@ -169,8 +169,8 @@ describe('happy', function(){
 
     z0.add('a:0,b:1',function ab(){})
 
-    console.log(z0.find('a:0,b:*'))
-    console.log(z0.list('a:0,b:*'))
+    expect( z0.find('a:0,b:*') ).to.equal(null)
+    expect( z0.list('a:0,b:*').length ).to.equal(1)
     
     fin()
   })
@@ -358,6 +358,76 @@ describe('happy', function(){
           fin()
         })
       })
+  })
+
+
+  it('addstar', function(fin){
+    var entries = [], hist = {}
+
+    var z0 = zeno({
+      log:function(entry){
+        entries.push( entry )
+      }})
+
+    z0
+      .add('a:0,b:0',function A(m,r){
+        r(0,{x:'a0b0'})
+      })
+
+      .add('a:0,b:1',function A(m,r){
+        r(0,{x:'a0b1'})
+      })
+
+      .add('a:0,b:*',function B(m,r){
+        this.prior(m,function(e,o){
+          if(e) return r(e)
+          o = o || {}
+          o.s=1
+          r(null,o)
+        })
+      })
+
+      .add('a:0,b:*,c:2',function B(m,r){
+        this.prior(m,function(e,o){
+          if(e) return r(e)
+          o = o || {}
+          o.s=2
+          r(null,o)
+        })
+      })
+
+    //console.log( require('util').inspect(z0.list(),{depth:null}))
+
+    // FIX: tree does not print entry for a:0,b:*
+    // patrun needs to handle starexist as first class feature
+    //console.log( require('util').inspect(z0.tree(),{depth:null}))
+
+    z0
+      .act('a:0,b:0',function(e,o){
+        if(e) return fin(e)
+        //console.log('a0b0',o)
+      })
+
+      .act('a:0,b:1',function(e,o){
+        if(e) return fin(e)
+        //console.log('a0b1',o)
+      })
+
+      .act('a:0,b:2',function(e,o){
+        if(e) return fin(e)
+        //console.log('a0b2',o)
+      })
+
+    // wont be called
+      .act('a:0,c:0',function(e,o){
+        if(e) return fin(e)
+        //console.log('a0c0',o)
+      })
+
+    setImmediate(function(){
+      //console.log(entries)
+      fin()
+    })
 
   })
 

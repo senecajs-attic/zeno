@@ -10,6 +10,7 @@ rules:
   key-spacing: 0
   no-extra-boolean-cast: 0
   curly: 0
+  yoda: 0
 
 
 

@@ -5,6 +5,7 @@
 var _      = require('lodash')
 var patrun = require('patrun')
 var jsonic = require('jsonic')
+var gex    = require('gex')
 
 
 module.exports = function zeno( options ) {
@@ -28,7 +29,7 @@ function Zeno( options ) {
   }, options )
 
 
-  self.act_patrun = patrun()
+  var act_patrun = patrun(starexist)
 
 
   self.add = function zeno_add() {
@@ -37,24 +38,46 @@ function Zeno( options ) {
     var action  = arguments[arguments.length - 1]
     var issub   = spec.sub$
 
-    var prior = self.act_patrun.find( pattern, true )
+    var simple = true
+    _.each( pattern, function( v ) {
+      simple = simple && !String(v).match(/[\*\?]/)
+    })
 
-    if( prior && issub ) {
-      prior.sub.push( action )
-    }
-    else {
-      self.act_patrun.add( pattern, {
-        pattern: pattern,
-        action:  issub ? _.noop : action,
-        prior:   prior,
-        sub:     issub ? [action] : []
+
+    var priors = act_patrun.list( pattern, true )
+
+    if( 0 === priors.length || !simple ) {
+      priors.push({
+        initial: true,
+        data: {
+          pattern: pattern,
+          level:   -1
+        }
       })
     }
 
-    options.log({
-      type:    issub ? 'sub' : 'add',
-      pattern: pattern,
-      action:  action.name
+    _.each( priors, function( prior ) {
+      if( issub && !prior.initial ) {
+        prior.data.sub.push( action )
+      }
+      else {
+        act_patrun.add( prior.data.pattern, {
+          pattern: prior.data.pattern,
+          action:  issub ? _.noop : action,
+          prior:   !prior.initial ? prior.data : null,
+          level:   prior.data.level + 1,
+          sub:     issub ? [action] : []
+        })
+      }
+
+      options.log({
+        time:    Date.now(),
+        type:    issub ? 'sub' : 'add',
+        pattern: pattern,
+        prior:   !prior.initial ? prior.data.pattern : null,
+        action:  action.name
+      })
+
     })
 
     return self
@@ -67,11 +90,19 @@ function Zeno( options ) {
 
     respond = _.isFunction( respond ) ? respond : _.noop
 
-    var actdef = self.act_patrun.find( clean(msg) )
+    var actdef = act_patrun.find( clean(msg) )
 
     if( actdef ) {
       call_act( self, actdef, msg, respond )
       call_sub( self, actdef, msg )
+    }
+    else {
+      options.log({
+        time:    Date.now(),
+        type:    'act',
+        case:    'drop',
+        data:    msg
+      })
     }
 
     return self
@@ -81,14 +112,14 @@ function Zeno( options ) {
   self.find = function zeno_find() {
     var pattern = self.pattern.apply( self, arguments )
 
-    return self.act_patrun.find( clean(pattern) )
+    return act_patrun.find( clean(pattern) )
   }
 
 
   self.list = function zeno_list() {
     var pattern = self.pattern.apply( self, arguments )
 
-    return _.map( self.act_patrun.list( clean(pattern) ), function( entry ) {
+    return _.map( act_patrun.list( clean(pattern) ), function( entry ) {
       return entry.data
     })
   }
@@ -98,7 +129,7 @@ function Zeno( options ) {
     var pattern = self.pattern.apply( self, arguments )
     var tree    = {}
 
-    _.each( self.act_patrun.list( clean(pattern) ), function(entry) {
+    _.each( act_patrun.list( clean(pattern) ), function(entry) {
       var cur = tree, n
 
       _.each( entry.match, function( v, k ) {
@@ -106,7 +137,7 @@ function Zeno( options ) {
         cur = cur[n] ? cur[n] : (cur[n] = {})
       })
 
-      cur._ = self.act_patrun.find(entry.match)
+      cur._ = act_patrun.find(entry.match)
     })
 
     return tree
@@ -208,4 +239,27 @@ function Zeno( options ) {
       return ~n.indexOf('$')
     })
   }
+
+
+  function starexist( pat ) {
+    var gexers = {}
+    _.each( pat, function( v, k) {
+      if( String(v).match(/[\*\?]/) ) {
+        delete pat[k]
+        gexers[k] = gex(v)
+      }
+    })
+
+    return function( msg, data ) {
+      var out = data
+      _.each( gexers, function( g, k ) {
+        var v = msg[k]
+        if( null == g.on( v ) ) {
+          out = null
+        }
+      })
+      return out
+    }
+  }
+
 }

@@ -1,4 +1,168 @@
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.zeno = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+/* Copyright (c) 2011-2015 Richard Rodger, MIT License */
+/* jshint node:true, asi:true, eqnull:true */
+
+;(function() {
+  "use strict";
+
+  var root        = this
+  var previous_gex = root.gex
+
+  var has_require = typeof require !== 'undefined'
+
+  var _ = root._
+
+  if( typeof _ === 'undefined' ) {
+    if( has_require ) {
+      _ = require('lodash')
+    }
+    else throw new Error('gex requires underscore, see http://underscorejs.org');
+  }
+
+
+  function Gex(gexspec) {
+    var self = this
+
+    function dodgy(obj) {
+      return ( _.isNull(obj) || _.isNaN(obj) || _.isUndefined(obj) );
+    }
+
+    function clean(gexexp) {
+      var gexstr = ''+gexexp
+      if( _.isNull(gexexp) || _.isNaN(gexexp) || _.isUndefined(gexexp) ) {
+        gexstr = ''
+      } 
+      return gexstr;
+    }
+
+    function match(str) {
+      str = ''+str
+      var hasmatch = false
+      var gexstrs = _.keys(gexmap)
+
+      for(var i = 0; i < gexstrs.length && !hasmatch; i++ ) {
+        hasmatch = !!gexmap[gexstrs[i]].exec(str)
+      }
+      return hasmatch;
+    }
+
+
+    self.noConflict = function() {
+      root.gex = previous_gex;
+      return self;
+    }
+
+
+    self.on = function(obj) {
+      if( _.isString(obj) || 
+          _.isNumber(obj) || 
+          _.isBoolean(obj) || 
+          _.isDate(obj) || 
+          _.isRegExp(obj) 
+        ) 
+      {
+        return match(obj) ? obj : null;
+      }
+
+      else if( _.isArray(obj) || _.isArguments(obj)
+             ) {
+               var out = []
+               for( var i = 0; i < obj.length; i++ ) {
+                 if( !dodgy(obj[i]) && match(obj[i]) ) {
+                   out.push(obj[i])
+                 }
+               }
+               return out;
+             }
+
+      else if( _.isObject(obj) ) {
+        var outobj = {}
+        for( var p in obj ) {
+          if( obj.hasOwnProperty(p) ) {
+            if( match(p) ) {
+              outobj[p] = obj[p]
+            }
+          }
+        }
+        return outobj;
+      }
+
+      else {
+        return null;
+      }
+    }
+
+    self.esc = function(gexexp) {
+      var gexstr = clean(gexexp)
+      gexstr = gexstr.replace(/\*/g,'**')
+      gexstr = gexstr.replace(/\?/g,'*?')
+      return gexstr;
+    }
+
+
+    self.re = function(gs) {
+      if( '' === gs || gs ) {
+        gs = self.escregexp(gs)
+
+        // use [\s\S] instead of . to match newlines
+        gs = gs.replace(/\\\*/g,'[\\s\\S]*')
+        gs = gs.replace(/\\\?/g,'[\\s\\S]')
+
+        // escapes ** and *?
+        gs = gs.replace(/\[\\s\\S\]\*\[\\s\\S\]\*/g,'\\\*')
+        gs = gs.replace(/\[\\s\\S\]\*\[\\s\\S\]/g,'\\\?')
+
+        gs = '^'+gs+'$'
+
+        return new RegExp(gs);
+      }
+      else {
+        var gexstrs = _.keys(gexmap)
+        return 1 == gexstrs.length ? gexmap[gexstrs[0]] : _.clone(gexmap);
+      }
+    }
+
+    self.escregexp = function(restr) {
+      return restr ? (''+restr).replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&") : '';
+    }
+
+    self.toString = function() {
+      return ''+_.keys(gexmap);
+    }
+
+
+    var gexstrs = _.isArray(gexspec) ? gexspec : [gexspec]
+
+    var gexmap = {}
+
+    _.each( gexstrs, function(str) {
+      str = clean(str)
+      var re = self.re(str)
+      gexmap[str]=re
+    })
+  }
+
+
+  function gex(gexspec) {
+    var gexobj = new Gex(gexspec)
+    return gexobj;
+  }
+  gex.Gex = Gex
+
+
+  if( typeof exports !== 'undefined' ) {
+    if( typeof module !== 'undefined' && module.exports ) {
+      exports = module.exports = gex
+    }
+    exports.gex = gex
+  } 
+  else {
+    root.gex = gex
+  }
+
+}).call(this);
+
+},{"lodash":3}],2:[function(require,module,exports){
 /* Copyright (c) 2013-2015 Richard Rodger, MIT License, https://github.com/rjrodger/jsonic */
 "use strict";
 
@@ -2202,7 +2366,7 @@ var jsonic_parser = (function() {
 
 
 
-},{}],2:[function(require,module,exports){
+},{}],3:[function(require,module,exports){
 /**
  * @license
  * lodash 3.10.0 (Custom Build) <https://lodash.com/>
@@ -14555,171 +14719,9 @@ var jsonic_parser = (function() {
   }
 }.call(this));
 
-},{}],3:[function(require,module,exports){
-/* Copyright (c) 2011-2015 Richard Rodger, MIT License */
-/* jshint node:true, asi:true, eqnull:true */
-
-;(function() {
-  "use strict";
-
-  var root        = this
-  var previous_gex = root.gex
-
-  var has_require = typeof require !== 'undefined'
-
-  var _ = root._
-
-  if( typeof _ === 'undefined' ) {
-    if( has_require ) {
-      _ = require('lodash')
-    }
-    else throw new Error('gex requires underscore, see http://underscorejs.org');
-  }
-
-
-  function Gex(gexspec) {
-    var self = this
-
-    function dodgy(obj) {
-      return ( _.isNull(obj) || _.isNaN(obj) || _.isUndefined(obj) );
-    }
-
-    function clean(gexexp) {
-      var gexstr = ''+gexexp
-      if( _.isNull(gexexp) || _.isNaN(gexexp) || _.isUndefined(gexexp) ) {
-        gexstr = ''
-      } 
-      return gexstr;
-    }
-
-    function match(str) {
-      str = ''+str
-      var hasmatch = false
-      var gexstrs = _.keys(gexmap)
-
-      for(var i = 0; i < gexstrs.length && !hasmatch; i++ ) {
-        hasmatch = !!gexmap[gexstrs[i]].exec(str)
-      }
-      return hasmatch;
-    }
-
-
-    self.noConflict = function() {
-      root.gex = previous_gex;
-      return self;
-    }
-
-
-    self.on = function(obj) {
-      if( _.isString(obj) || 
-          _.isNumber(obj) || 
-          _.isBoolean(obj) || 
-          _.isDate(obj) || 
-          _.isRegExp(obj) 
-        ) 
-      {
-        return match(obj) ? obj : null;
-      }
-
-      else if( _.isArray(obj) || _.isArguments(obj)
-             ) {
-               var out = []
-               for( var i = 0; i < obj.length; i++ ) {
-                 if( !dodgy(obj[i]) && match(obj[i]) ) {
-                   out.push(obj[i])
-                 }
-               }
-               return out;
-             }
-
-      else if( _.isObject(obj) ) {
-        var outobj = {}
-        for( var p in obj ) {
-          if( obj.hasOwnProperty(p) ) {
-            if( match(p) ) {
-              outobj[p] = obj[p]
-            }
-          }
-        }
-        return outobj;
-      }
-
-      else {
-        return null;
-      }
-    }
-
-    self.esc = function(gexexp) {
-      var gexstr = clean(gexexp)
-      gexstr = gexstr.replace(/\*/g,'**')
-      gexstr = gexstr.replace(/\?/g,'*?')
-      return gexstr;
-    }
-
-
-    self.re = function(gs) {
-      if( '' === gs || gs ) {
-        gs = self.escregexp(gs)
-
-        // use [\s\S] instead of . to match newlines
-        gs = gs.replace(/\\\*/g,'[\\s\\S]*')
-        gs = gs.replace(/\\\?/g,'[\\s\\S]')
-
-        // escapes ** and *?
-        gs = gs.replace(/\[\\s\\S\]\*\[\\s\\S\]\*/g,'\\\*')
-        gs = gs.replace(/\[\\s\\S\]\*\[\\s\\S\]/g,'\\\?')
-
-        gs = '^'+gs+'$'
-
-        return new RegExp(gs);
-      }
-      else {
-        var gexstrs = _.keys(gexmap)
-        return 1 == gexstrs.length ? gexmap[gexstrs[0]] : _.clone(gexmap);
-      }
-    }
-
-    self.escregexp = function(restr) {
-      return restr ? (''+restr).replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&") : '';
-    }
-
-    self.toString = function() {
-      return ''+_.keys(gexmap);
-    }
-
-
-    var gexstrs = _.isArray(gexspec) ? gexspec : [gexspec]
-
-    var gexmap = {}
-
-    _.each( gexstrs, function(str) {
-      str = clean(str)
-      var re = self.re(str)
-      gexmap[str]=re
-    })
-  }
-
-
-  function gex(gexspec) {
-    var gexobj = new Gex(gexspec)
-    return gexobj;
-  }
-  gex.Gex = Gex
-
-
-  if( typeof exports !== 'undefined' ) {
-    if( typeof module !== 'undefined' && module.exports ) {
-      exports = module.exports = gex
-    }
-    exports.gex = gex
-  } 
-  else {
-    root.gex = gex
-  }
-
-}).call(this);
-
-},{"lodash":2}],4:[function(require,module,exports){
+},{}],4:[function(require,module,exports){
+arguments[4][1][0].apply(exports,arguments)
+},{"dup":1,"lodash":3}],5:[function(require,module,exports){
 /* Copyright (c) 2013-2015 Richard Rodger, MIT License, https://github.com/rjrodger/patrun */
 
 ;(function() {
@@ -15081,7 +15083,7 @@ var jsonic_parser = (function() {
 
 }).call(this);
 
-},{"gex":3,"lodash":2}],5:[function(require,module,exports){
+},{"gex":4,"lodash":3}],6:[function(require,module,exports){
 /* Copyright (c) 2015 Richard Rodger, MIT License */
 "use strict";
 
@@ -15089,6 +15091,7 @@ var jsonic_parser = (function() {
 var _      = require('lodash')
 var patrun = require('patrun')
 var jsonic = require('jsonic')
+var gex    = require('gex')
 
 
 module.exports = function zeno( options ) {
@@ -15112,7 +15115,7 @@ function Zeno( options ) {
   }, options )
 
 
-  self.act_patrun = patrun()
+  var act_patrun = patrun(starexist)
 
 
   self.add = function zeno_add() {
@@ -15121,24 +15124,46 @@ function Zeno( options ) {
     var action  = arguments[arguments.length - 1]
     var issub   = spec.sub$
 
-    var prior = self.act_patrun.find( pattern, true )
+    var simple = true
+    _.each( pattern, function( v ) {
+      simple = simple && !String(v).match(/[\*\?]/)
+    })
 
-    if( prior && issub ) {
-      prior.sub.push( action )
-    }
-    else {
-      self.act_patrun.add( pattern, {
-        pattern: pattern,
-        action:  issub ? _.noop : action,
-        prior:   prior,
-        sub:     issub ? [action] : []
+
+    var priors = act_patrun.list( pattern, true )
+
+    if( 0 === priors.length || !simple ) {
+      priors.push({
+        initial: true,
+        data: {
+          pattern: pattern,
+          level:   -1
+        }
       })
     }
 
-    options.log({
-      type:    issub ? 'sub' : 'add',
-      pattern: pattern,
-      action:  action.name
+    _.each( priors, function( prior ) {
+      if( issub && !prior.initial ) {
+        prior.data.sub.push( action )
+      }
+      else {
+        act_patrun.add( prior.data.pattern, {
+          pattern: prior.data.pattern,
+          action:  issub ? _.noop : action,
+          prior:   !prior.initial ? prior.data : null,
+          level:   prior.data.level + 1,
+          sub:     issub ? [action] : []
+        })
+      }
+
+      options.log({
+        time:    Date.now(),
+        type:    issub ? 'sub' : 'add',
+        pattern: pattern,
+        prior:   !prior.initial ? prior.data.pattern : null,
+        action:  action.name
+      })
+
     })
 
     return self
@@ -15151,11 +15176,19 @@ function Zeno( options ) {
 
     respond = _.isFunction( respond ) ? respond : _.noop
 
-    var actdef = self.act_patrun.find( clean(msg) )
+    var actdef = act_patrun.find( clean(msg) )
 
     if( actdef ) {
       call_act( self, actdef, msg, respond )
       call_sub( self, actdef, msg )
+    }
+    else {
+      options.log({
+        time:    Date.now(),
+        type:    'act',
+        case:    'drop',
+        data:    msg
+      })
     }
 
     return self
@@ -15165,14 +15198,14 @@ function Zeno( options ) {
   self.find = function zeno_find() {
     var pattern = self.pattern.apply( self, arguments )
 
-    return self.act_patrun.find( clean(pattern) )
+    return act_patrun.find( clean(pattern) )
   }
 
 
   self.list = function zeno_list() {
     var pattern = self.pattern.apply( self, arguments )
 
-    return _.map( self.act_patrun.list( clean(pattern) ), function( entry ) {
+    return _.map( act_patrun.list( clean(pattern) ), function( entry ) {
       return entry.data
     })
   }
@@ -15182,7 +15215,7 @@ function Zeno( options ) {
     var pattern = self.pattern.apply( self, arguments )
     var tree    = {}
 
-    _.each( self.act_patrun.list( clean(pattern) ), function(entry) {
+    _.each( act_patrun.list( clean(pattern) ), function(entry) {
       var cur = tree, n
 
       _.each( entry.match, function( v, k ) {
@@ -15190,7 +15223,7 @@ function Zeno( options ) {
         cur = cur[n] ? cur[n] : (cur[n] = {})
       })
 
-      cur._ = self.act_patrun.find(entry.match)
+      cur._ = act_patrun.find(entry.match)
     })
 
     return tree
@@ -15292,7 +15325,30 @@ function Zeno( options ) {
       return ~n.indexOf('$')
     })
   }
+
+
+  function starexist( pat ) {
+    var gexers = {}
+    _.each( pat, function( v, k) {
+      if( String(v).match(/[\*\?]/) ) {
+        delete pat[k]
+        gexers[k] = gex(v)
+      }
+    })
+
+    return function( msg, data ) {
+      var out = data
+      _.each( gexers, function( g, k ) {
+        var v = msg[k]
+        if( null == g.on( v ) ) {
+          out = null
+        }
+      })
+      return out
+    }
+  }
+
 }
 
-},{"jsonic":1,"lodash":2,"patrun":4}]},{},[5])(5)
+},{"gex":1,"jsonic":2,"lodash":3,"patrun":5}]},{},[6])(6)
 });
