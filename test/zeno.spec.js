@@ -396,7 +396,7 @@ describe('happy', function(){
         })
       })
 
-    //console.log( require('util').inspect(z0.list(),{depth:null}))
+    console.log( require('util').inspect(z0.list(),{depth:null}))
 
     // FIX: tree does not print entry for a:0,b:*
     // patrun needs to handle starexist as first class feature

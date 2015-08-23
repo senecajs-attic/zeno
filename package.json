@@ -28,7 +28,7 @@
     "gex": "0.2.1",
     "jsonic": "0.2.2",
     "lodash": "3.10.0",
-    "patrun": "0.4.4"
+    "patrun": "0.5.0"
   },
   "devDependencies": {
     "browserify": "10.2.6",

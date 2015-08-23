@@ -5,7 +5,7 @@
 var _      = require('lodash')
 var patrun = require('patrun')
 var jsonic = require('jsonic')
-var gex    = require('gex')
+//var gex    = require('gex')
 
 
 module.exports = function zeno( options ) {
@@ -29,7 +29,7 @@ function Zeno( options ) {
   }, options )
 
 
-  var act_patrun = patrun(starexist)
+  var act_patrun = patrun({gex:true})
 
 
   self.add = function zeno_add() {
@@ -43,7 +43,7 @@ function Zeno( options ) {
       simple = simple && !String(v).match(/[\*\?]/)
     })
 
-
+    // TODO: should priors include parents??? - ie pattern subsets
     var priors = act_patrun.list( pattern, true )
 
     if( 0 === priors.length || !simple ) {
@@ -240,7 +240,7 @@ function Zeno( options ) {
     })
   }
 
-
+/*
   function starexist( pat ) {
     var gexers = {}
     _.each( pat, function( v, k) {
@@ -261,5 +261,5 @@ function Zeno( options ) {
       return out
     }
   }
-
+*/
 }
